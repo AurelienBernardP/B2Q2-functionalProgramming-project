@@ -42,8 +42,6 @@
     )
  )
 
-;if no x is in the taquin what happens with the 0 0?
-
  ;attention si N sous listes alros sous listes de taille N
  (define find_gap
     (lambda (ls line size)
