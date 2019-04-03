@@ -4,8 +4,8 @@
 (define taquin_adj
     (lambda (ls)
         (let ((alphabet '(u d l r)) (position (find_gap ls 1 1)))
-            (if (or (null? ls) (equal? position '(0 0)))  
-                '()
+            (if (or (null? ls) (equal? position '(0 0 0)))  
+                ls
                 (map (lambda(x) (cons x (list (transition ls x position)))) alphabet)
             )
         )
@@ -46,7 +46,7 @@
  (define find_gap
     (lambda (ls line size)
        (let ((x (find_gap_aux ls 1)))
-          (cond ((and (null? ls) (= line size)) (append (0 0) (list size)))
+          (cond ((and (null? ls) (= line size)) '(0 0 0))
                 ((and (null? ls) (not (= line size))) (list (- size 1)))
                 ((> x 0) (append (list line x) (find_gap (cdr ls) line (+ size 1))))
                 (else (find_gap (cdr ls) (+ line 1) (+ size 1)))
