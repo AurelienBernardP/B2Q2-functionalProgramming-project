@@ -26,3 +26,14 @@
 (define (taquin-heuristique ls)
     (heuristique-aux ls 0 0 (sup-list-length ls 0))
 )
+#|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    takes as input a correctly formted list of lists
+    representing a sliding puzzle(taquin) and outputs
+    a list where the first element is the heuristique
+    velue of the lis input as argument and the second
+    element id the representation of the state of the
+    puzzle.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|#
+(define (make-state ls)
+    (list (taquin-heuristique ls) ls)
+)
