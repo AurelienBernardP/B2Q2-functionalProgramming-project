@@ -1,13 +1,3 @@
-(define make-move (sits adj acc-state?)
-    (if (null? sits) '()
-        (if () (make-move (cdr sits) adj acc-state?)
-            (let ((list1(new-sits(car sits) adj ) (list2(make-move(cdr sits acc-state?))))))
-            (merge-sits list1 list2)
-        )
-    )
-)
-
-
 (define solver-aux (nb-answers sits adj acc-state?)
     (let ((answer(get-answer sits))))
     (if (equal? #f answer) (solver-aux(nb-answers (make-move sits adj acc-state?) adj acc-state?))
@@ -20,28 +10,6 @@
         (solver-aux 1 '(()(s)()) adj acc-state?)
         )
 )
-
-(define get-word (sits nb)
-    (if (null? sits) 'unavailable-answer
-        (if (= nb 1) (caar sits)
-            (get-word(cdr sits) (- nb 1)) 
-        ) 
-    )
-)
-
-%%%%%%%%%%%%%%%%%%%%%%% counts the number of acceptance states in sits( by either using )
-(define count-answers (sits acc-satate? nb-answers)
-
-
-)
-
-%%%%%%%%%%%%%%%%%%%%%compares two states
-(define compare-state (sit1 sit2)
-
-
-
-)
-
 
 (define make-move (sits adj acc-state? solutions )
     (if (set-empty? sits) (set)
