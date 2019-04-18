@@ -11,15 +11,17 @@
         )
 )
 
-(define make-move (sits adj acc-state? solutions )
-    (if (set-empty? sits) (set)
-        (set-union (make-move (set-rest sits) adj acc-state solutions)(list->set (map (lambda(x)(make-move-aux (car(set-first sits)) x (caddr(set-first sits))acc-state solutions)))))    
+
+
+////should be good///////////
+(define make-move (sits adj acc-state?)
+    (if (set-empty? sits) (set )
+        (if (acc-state?(cadr(set-first sits))) (make-move (set-rest sits) adj acc-state?)
+            (set-union (make-move (set-rest sits) adj acc-state?)(make-move-aux (set-first sits) (adj (set-first sits))))    
+        )
     )
 )
 
-
-
-////should be good///////////7
 (define make-move-aux (old-state new-states)
     (if (null? new-states) (set )
         (if (equal? 'sink (car new-states)) (make-move-aux old-state (cdr new-states))
