@@ -1,38 +1,46 @@
-(define solver-aux (nb-answers sits adj acc-state?)
-    (let ((answer(get-answer sits))))
-    (if (equal? #f answer) (solver-aux(nb-answers (make-move sits adj acc-state?) adj acc-state?))
-        (cons (get-word sits nb-answer) (lambda () (solver-aux (+ 1 nb-answers) sits adj acc-state?)))
+(define (find-answers sits answers acc-state?)
+    (if (set-empty? sits) answers
+        (if (acc-state? (cadr(set-first sits))) (find-answers (set-rest sits) (cons (car(set-first sits) answers)) acc-state?)
+            (find-answers (set-rest sits) answers acc-state?)
+        )
     )
 )
 
-(define rp-solver(s adj acc-state?)
-    (lambda ()
-        (solver-aux 1 '(()(s)()) adj acc-state?)
+(define (solver-aux nb-answers sits adj acc-state? answers)
+    (if (set-empty? sits) 'all-situations-done   
+        (let ((new-answers (find-answers sits answers acc-state? )))
+          (if (null? new-answers) (solver-aux(nb-answers (make-move sits adj acc-state?) adj acc-state? new-answers))
+              (cons (reverse(car(new-answers))) (lambda () (solver-aux (+ 1 nb-answers) sits adj acc-state? (cdr new-answers))))
+          )
         )
+    )
+)
+
+(define (rp-solver s adj acc-state?)
+    (lambda ()
+        (solver-aux 1 (set(list '() s '())) adj acc-state? '())
+    )
 )
 
 
-
-////should be good///////////
-(define make-move (sits adj acc-state?)
+(define (make-move sits adj acc-state?)
     (if (set-empty? sits) (set )
         (if (acc-state?(cadr(set-first sits))) (make-move (set-rest sits) adj acc-state?)
-            (set-union (make-move (set-rest sits) adj acc-state?)(make-move-aux (set-first sits) (adj (set-first sits))))    
+            (set-union (make-move-aux (set-first sits) (adj (set-first sits)))(make-move (set-rest sits) adj acc-state?))    
         )
     )
 )
 
-(define make-move-aux (old-state new-states)
+(define (make-move-aux old-state new-states)
     (if (null? new-states) (set )
-        (if (equal? 'sink (car new-states)) (make-move-aux old-state (cdr new-states))
-            (if (set-member? (caddr old-state)(cadr new-states)) (make-move-aux old-state (cdr new-states))
-                (make-new-state old-state (car new-states))
+        (if (equal? '(sink) (cdar new-states)) (make-move-aux old-state (cdr new-states))
+            (if (set-member? (caddr old-state)(cdar new-states)) (make-move-aux old-state (cdr new-states))
+                (set-add (make-move-aux old-state (cdr new-states)) (make-new-state old-state (car new-states)))
             )        
         )
     )
 )
 
-(define make-new-state (old-state new-pair)
+(define (make-new-state old-state new-pair)
     (list (cons (car new-pair)(car old-state)) (cdr new-pair) (set-add (caddr old-state) (cadr old-state)))
 )
-//////////until here///////////////////
