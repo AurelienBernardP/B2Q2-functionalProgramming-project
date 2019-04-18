@@ -17,9 +17,20 @@
     )
 )
 
-(define make-move-aux (current-word new-state forbiden-states acc-state solutions)
-    (if (equal? new-state 'sink) '()
-        (if )
-    )
 
+
+////should be good///////////7
+(define make-move-aux (old-state new-states)
+    (if (null? new-states) (set )
+        (if (equal? 'sink (car new-states)) (make-move-aux old-state (cdr new-states))
+            (if (set-member? (caddr old-state)(cadr new-states)) (make-move-aux old-state (cdr new-states))
+                (make-new-state old-state (car new-states))
+            )        
+        )
+    )
 )
+
+(define make-new-state (old-state new-pair)
+    (list (cons (car new-pair)(car old-state)) (cdr new-pair) (set-add (caddr old-state) (cadr old-state)))
+)
+//////////until here///////////////////
