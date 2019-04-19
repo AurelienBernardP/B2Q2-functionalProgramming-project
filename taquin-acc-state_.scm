@@ -15,5 +15,5 @@
 (define line-is-good 
     (lambda (ls col line size)
         (if (null? ls) #t 
-            (if (or (eq? (car ls) (+ (* size (- line 1)) col)) (and ( eq? (car ls) 'X) (= col line size))) (line-is-good (cdr ls) (+ col 1) line size )
+            (if (or (eq? (car ls) (+ (* size (- line 1)) col)) (and ( eq? (car ls) 'x) (= col line size))) (line-is-good (cdr ls) (+ col 1) line size )
                     #f))))
