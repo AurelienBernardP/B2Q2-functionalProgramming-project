@@ -34,3 +34,33 @@
     (list (heuristique (cadr new-pair)) (cons (car new-pair)(cadr old-sit)) (set-add(cadddr old-sit)(cadr old-sit)))
 )
 
+(define (rp-solve-heuristique s adj acc-state? heuristique )
+    (lambda ()
+        (solver-heu-aux (list(list (heuristique s) '() s '())) '() adj acc-state? heuristique)
+    )
+)
+
+(define (solver-heu-aux sits answers adj acc-state? heuristique)
+    (if(null? sits) '()
+        (let ((new-answers (find-answers-heu sits answers)))
+            (if (null? new-answers) (solver-heu-aux (make-move-heu sits adj acc-state? heuristique) answers adj acc-state? heuristique) )
+            (cons (reverse(car new-answers)) (lambda () (solver-heu-aux (remove-answers-heu sits) (cdr new-answers) adj acc-state? heuristique)))
+        )
+    )
+)
+
+(define (find-answers-heu sits answers)
+    (if (null? sits) answers
+        (if(<(caar sits) 0) answers
+             (find-answers (cdr sits) (cons (cadar sits) answers))
+        )
+    )
+)
+
+(define (remove-answers-heu sits)
+    (if (null? sits) '()
+            (if(= (caar sits) 0)  (remove-answers-heu (cdr sits))
+                sits
+            )
+    )
+)
