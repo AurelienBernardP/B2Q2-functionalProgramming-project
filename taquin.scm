@@ -18,10 +18,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;heuristic
 
-;si 'elem' est un element d'un taquin, caractérisé par un naturelle ou un 'x',
-;'col' et 'line' sont réspectivement la colonne et la ligne aux quelles l'élément se trouve dans le taquin
-;et 'size' est la taille du taquin.
-;manhatan-distance renvoi la distance de mahatan de l'element par rapport a sa position correcte dans le taquin
+;Si 'elem' est un élément d'un taquin (caractérisé par un naturel ou la lettre x),
+;et si 'col' et 'line' sont respectivement la colonne et la ligne auxquelles l'élément se 
+;trouve dans le taquin et 'size' est la taille du taquin, alors
+;(manhatan-distance elem col line size) renvoie la distance de Manhatan de l'élément par 
+;rapport à sa position correcte dans le taquin.
 (define (manhatan-distance elem col line size)
     (if (eq? elem 'x) 0 
         (+(abs(-(modulo (- elem 1) size)col))
@@ -29,44 +30,50 @@
         )
     )    
 )
+
 ; Si `state` est la représentation d'une partie de l'état du taquin,
-; 'line' la ligne ou débute la représentation du taquin dans 'state'
-; et 'size' est la taille du taquin.
-; (heuristic-aux state line size) renvoie un naturelle atribuant une borne supérieur mesurant la proximité de 'state'
-; a l'état accepteur.
-; En particulier, (heuristic-aux state 0 size) renvoi la valeur total de l'heuristique du taquin. 
+; 'line' la ligne où débute la représentation de 'state' dans le taquin
+; et 'size' est la taille du taquin alors
+; (heuristic-aux state line size) renvoie un naturel attribuant une borne supérieure
+; mesurant la proximité de 'state' à l'état accepteur.
+; En particulier, (heuristic-aux state 0 size) renvoie la valeur totale de l'heuristique 
+; du taquin. 
 (define (heuristic-aux state line size)
     (if (null? state) 0
         (+ (heuristic-line (car state) 0 line size) (heuristic-aux (cdr state) (+ 1 line) size))
     )
 )
+
 ; Si `ls` est une liste représentant une ligne d'un taquin,
-; 'line' la ligne représenté par 'ls'
-; et 'size' est la taille du taquin.
-; (heuristic-line ls col line size) renvoie un naturelle atribuant une borne supérieur mesurant la proximité des élements de la ligne 'ls' 
-; a partir de la colone 'col' aux élements dans l'état accepteur.
+; 'line' l'indice de la ligne représentée par 'ls' dans le taquin,
+; et 'size' est la taille du taquin, alors
+; (heuristic-line ls col line size) renvoie un naturel attribuant une borne supérieure
+; mesurant la proximité des éléments de la ligne 'ls' à partir de la colonne 'col' 
+; aux élements dans l'état accepteur.
 (define (heuristic-line ls col line size)
     (if (null? ls) 0
         (+ (manhatan-distance (car ls) col line size) (heuristic-line (cdr ls) (+ 1 col) line size) )
     )
 )
 
-;si 'ls' est une liste d'élements quelconque et 'counter' un rélle,
-;sup-list-lenght renvoi 'counter' + la longeur superficielle de la liste 'ls' 
+;Si 'ls' est une liste d'élements quelconque et 'counter' un réel,
+;(sup-list-lenght ls counteur) renvoie 'counter' + n avec n, la longeur superficielle
+; de la liste 'ls' 
 (define sup-list-length 
     (lambda (ls counter)
         (if (null? ls)counter 
             (sup-list-length (cdr ls)(+ counter 1)))))
+
 ; Si `state` est la représentation d'un état, (taquin-heuristic state)
-; renvoie un naturelle atribuant une borne supérieur mesurant la proximité de l'état du taquin
-; a l'état accepteur   
+; renvoie un naturel atribuant une borne supérieure mesurant la proximité de l'état du 
+;taquin à l'état accepteur   
 (define (taquin-heuristic state)
     (heuristic-aux state 0 (sup-list-length state 0))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;adjacent states 
 ; Si `state` est la représentation d'un état, (taquin-adj-states state)
-; renvoie une liste de paire pointées, dont le car est le symbole menant
+; renvoie une liste de paire pointées dont le car est le symbole menant
 ; à l'état représenté par le cdr.
 (define taquin-adj-states
     (lambda (state)
@@ -175,14 +182,16 @@
     (lambda (state) 
         (taquin-acc-state-aux state 1 (sup-list-length state 0))))
 
-; (taquin-acc-state-aux state line size) renvoie vrai si et seulement si tout les élments à partir de la ligne 'line' sont
-; dans la position correcte d'un état accepteur
+; (taquin-acc-state-aux state line size) renvoie vrai si et seulement si tous les
+; élements à partir de la ligne 'line' sont dans la position correcte d'un état accepteur.
 (define taquin-acc-state-aux
     (lambda (state line size)
         (if (null? state) #t 
             (and (line-is-good (car state) 1 line size ) (taquin-acc-state-aux (cdr state) (+ line 1) size )))))
-; (taquin-acc-state-aux state line size) renvoie vrai si et seulement si tout les élments de la ligne 'line' a partir de la collone 'col' sont
-; dans la position correcte d'un état accepteur.
+
+; (taquin-acc-state-aux state line size) renvoie vrai si et seulement si tous les 
+; éléments de la ligne 'line' à partir de la colonne 'col' sont dans la position correcte 
+; d'un état accepteur.
 (define line-is-good 
     (lambda (state col line size)
         (if (null? state) #t 
