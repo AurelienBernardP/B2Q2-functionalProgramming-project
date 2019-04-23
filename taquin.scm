@@ -145,7 +145,7 @@
        (let ((x (find_gap_aux state 1)))
           (cond ((and (null? state) (= line size)) '(0 0 0))
                 ((and (null? state) (not (= line size))) (list (- size 1)))
-                ((> x 0) (append (list line x) (find_gap (cdr ls) line (+ size 1))))
+                ((> x 0) (append (list line x) (find_gap (cdr state) line (+ size 1))))
                 (else (find_gap (cdr state) (+ line 1) (+ size 1)))
           )
        )
@@ -173,7 +173,7 @@
 ; représentation de l'état accepteur
  (define taquin-acc-state?
     (lambda (state) 
-        (taquin-acc-state-aux state 1 1 (sup-list-length state 0))))
+        (taquin-acc-state-aux state 1 (sup-list-length state 0))))
 
 ; (taquin-acc-state-aux state line size) renvoie vrai si et seulement si tout les élments à partir de la ligne 'line' sont
 ; dans la position correcte d'un état accepteur
