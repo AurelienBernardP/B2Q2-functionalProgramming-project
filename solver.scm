@@ -2,12 +2,14 @@
 (provide rp-solve)
 (provide rp-solve-heuristic)
 
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
-;Si 'sits' est un ensemble de situations d'un puzzle régulier, 'answers' une liste de mots renversés qui 
-;mènent l'état initial du puzzle à l'état accepteur et 'acc-state?' le prédicat accepteur d'un état du puzzle, alors
-;(find-answers sits answers acc-state?) retourne la liste des mots 
-se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accepteur.
+;Une situation est une liste contenant respectivement un mot qui a été appliqué
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
+;déjà visités.
+;Si 'sits' est un ensemble de situations d'un puzzle régulier, 'answers' une 
+;liste de mots renversés qui mènent l'état initial du puzzle à l'état accepteur 
+;et 'acc-state?' le prédicat accepteur du puzzle, alors
+;(find-answers sits answers acc-state?) retourne la liste des mots se trouvant 
+;dans 'sits' et 'answers' et menant l'état initial à l'état accepteur.
 
 (define (find-answers sits answers acc-state?)
     (if (set-empty? sits) answers
@@ -16,14 +18,18 @@ se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accept
         )
     )
 )
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
+
+;Une situation est une liste contenant respectivement un mot qui a été appliqué 
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états
+;déjà visités.
 ;Si 'sits' est un ensemble de situations d'un puzzle régulier,
-;'answers' une liste de mots renversés qui mènent l'état initial du puzzle à l'état accepteur et n'ayant pas encore été affichée,
-;'acc-state?' le prédicat accepteur de l'état du puzzle et 'adj' la fonction d'adjacence du puzzle, alors
-; (solver-aux sits adj acc-state? answers) retourne une paire pointée où le car est un mot de 'answers' renversé et
-;le cdr est une procédure dont l'évaluation retourne à nouveau une paire pointée du même type avec une solution
-;différente des précédentes.
+;'answers' une liste de mots renversés qui mènent l'état initial du puzzle à 
+;l'état accepteur et n'ayant pas encore été affichée,'acc-state?' le prédicat 
+;accepteur du puzzle et 'adj' la fonction d'adjacence du puzzle, alors
+;(solver-aux sits adj acc-state? answers) retourne une paire pointée où le car 
+;est un mot de 'answers' renversé et le cdr est une procédure dont l'évaluation
+;retourne à nouveau une paire pointée du même type avec une solution différente
+;des précédentes.
 (define (solver-aux sits adj acc-state? answers)
     (if (and (set-empty? sits)(null? answers)) '()
         (let ((new-answers (find-answers sits answers acc-state? )))
@@ -33,12 +39,13 @@ se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accept
         )
     )
 )
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
+
+;Une situation est une liste contenant respectivement un mot qui a été appliqué 
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
+;déjà visités.
 ;Si 'sits' est un ensemble de situations d'un puzzle régulier
 ;et 'acc-state?' le prédicat accepteur d'un état du puzzle, alors
-;(remove-answers sits acc-states?) retourne l'ensemble des situations 'sits' où les situations contenant
-;des états accepteurs ont été éliminés.
+;(remove-answers sits acc-states?) retourne l'ensemble des situations 'sits' où ;les situations contenant des états accepteurs ont été éliminés.
 (define (remove-answers sits acc-state?)
     (if (set-empty? sits) (set )
         (if (acc-state? (cadr(set-first sits))) (remove-answers (set-rest sits) acc-state?)
@@ -57,13 +64,14 @@ se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accept
     )
 )
 
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
-;Si 'sits' est un ensemble de situations d'un puzzle régulier
-;'acc-state?' le prédicat accepteur du puzzle,
-;et 'adj' la fonction d'adjacence du puzzle, alors
-;(make-move sits adj acc-state?) retourne un ensemble des situations résultantes 
-;de l'application de la fonction 'adj' sur chaque élément de 'sits'.
+;Une situation est une liste contenant respectivement un mot qui a été appliqué 
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
+;déjà visités.
+;Si 'sits' est un ensemble de situations d'un puzzle régulier,
+;'acc-state?' le prédicat accepteur du puzzleet 'adj' la fonction d'adjacence 
+;du puzzle, alors (make-move sits adj acc-state?) retourne un ensemble des 
+;situations résultantes de l'application de la fonction 'adj' sur chaque 
+;élément de 'sits'.
 (define (make-move sits adj acc-state?)
     (if (set-empty? sits) (set )
         (if (acc-state? (cadr(set-first sits))) (make-move (set-rest sits) adj acc-state?)
@@ -71,12 +79,18 @@ se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accept
         )
     )
 )
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
-;si 'old-state' est une situation d'un puzzle régulie
-;et 'new-states' est une liste de paires pointée contenant tous les états adjacents à l'état de 'old-state' 
-;et le mouvement menant à cet état, alors (make-move-aux old-state new-states) retourne un ensemble de 
-;situations adjacentes à 'old-state' valides et non membres des états pŕecédants de 'old-state'.
+
+;Une situation est une liste contenant respectivement un mot qui a été appliqué 
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
+;déjà visités.
+;si 'old-state' est une situation d'un puzzle régulier
+;et 'new-states' une liste de paires pointée contenant respectivement tous les
+;états adjacents à l'état de 'old-state' et le mouvement menant à cet état,
+;alors (make-move-aux old-state new-states) retourne un ensemble de situations 
+;valides, adjacentes à 'old-state' et n'étant pas dans 'old-state'.
+
+;respectivement ?
+;n'étant pad dans old state ?
 (define (make-move-aux old-state new-states)
     (if (null? new-states) (set )
         (if (equal? 'sink (cdar new-states)) (make-move-aux old-state (cdr new-states))
@@ -87,12 +101,21 @@ se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accept
     )
 )
 
-;Une situation est une liste contenant respectivement un mot qui a été appliqué sur une situation initiale,
-;l'état actuel du puzzle et un ensemble d'états déjà visités.
+;Une situation est une liste contenant respectivement un mot qui a été appliqué 
+;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
+;déjà visités.
 ;Si 'old-state' est une situation d'un puzzle régulier
-;et new-pair est une paire pointé où le car est une lettre de l'alphabet du puzzle et le cdr est un état adjacent a l'état de old-sate
-;make-new-state retourne une situation où le mot est la letre de new-pair concatené au mot de old-state, l'état est l'état de new-pair,
-;et lensemble de old-state au quelle l'état de old-state a été rajouté.
+;et 'new-pair' une paire pointée où le car est une lettre de l'alphabet du
+;puzzle et le cdr est un état adjacent à l'état de 'old-state', alors
+;(make-new-state old-state new-pair) retourne une situation où le mot est la
+;lettre de 'new-pair' concatenée au mot de 'old-state' et où 
+
+
+
+
+
+;what ? l'état est celui
+;de 'new-pair' et l'ensemble de 'old-state' auquel l'état de 'old-state' a été rajouté.
 (define (make-new-state old-state new-pair)
     (list (cons (car new-pair)(car old-state)) (cdr new-pair) (set-add (caddr old-state) (cadr old-state)))
 )
