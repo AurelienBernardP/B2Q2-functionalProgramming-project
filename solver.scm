@@ -1,3 +1,4 @@
+#lang racket
 (provide rp-solve)
 (provide rp-solve-heuristic)
 
