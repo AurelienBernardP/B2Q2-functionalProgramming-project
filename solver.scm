@@ -84,13 +84,10 @@
 ;sur une situation initiale, l'état actuel du puzzle et un ensemble d'états 
 ;déjà visités.
 ;si 'old-state' est une situation d'un puzzle régulier
-;et 'new-states' une liste de paires pointée contenant respectivement tous les
-;états adjacents à l'état de 'old-state' et le mouvement menant à cet état,
+;et 'new-states' une liste de paires pointée contenant dans les cdr les
+;états adjacents à l'état de 'old-state' et dans les car le mouvement menant à cet état,
 ;alors (make-move-aux old-state new-states) retourne un ensemble de situations 
-;valides, adjacentes à 'old-state' et n'étant pas dans 'old-state'.
-
-;respectivement ?
-;n'étant pad dans old state ?
+;valides, adjacentes à 'old-state' et n'étant pas dans l'ensamble d'états déjà visite de 'old-state'.
 (define (make-move-aux old-state new-states)
     (if (null? new-states) (set )
         (if (equal? 'sink (cdar new-states)) (make-move-aux old-state (cdr new-states))
@@ -108,39 +105,28 @@
 ;et 'new-pair' une paire pointée où le car est une lettre de l'alphabet du
 ;puzzle et le cdr est un état adjacent à l'état de 'old-state', alors
 ;(make-new-state old-state new-pair) retourne une situation où le mot est la
-;lettre de 'new-pair' concatenée au mot de 'old-state' et où 
-
-
-
-
-
-;what ? l'état est celui
-;de 'new-pair' et l'ensemble de 'old-state' auquel l'état de 'old-state' a été rajouté.
+;lettre de 'new-pair' concatenée au mot de 'old-state' ,l'état est l'état adjacent dans
+;'new-pair' et l'ensemble de 'old-state' auquel l'état de 'old-state' a été rajouté.
 (define (make-new-state old-state new-pair)
     (list (cons (car new-pair)(car old-state)) (cdr new-pair) (set-add (caddr old-state) (cadr old-state)))
 )
 
 
 ;;;;;;;;;;;;;;;;;;;; heuristic
-
-;si new-sits et old-sits sont des listes de situations d'un puzzle régulier, avec old-sits trié en ordre corisant d'heuristic
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;merge-sits renvoi la liste trié de situations produite par la concaténation de new-sits et old-sits.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si new-sits et old-sits sont des listes de situations d'un puzzle régulier, avec old-sits trié en ordre croisant d'heuristic
+;(merge-sits new-sits old-sits) renvoi la liste trié de situations produite par la fusion de new-sits et old-sits.
 (define (merge-sits new-sits old-sits)
     (if(null? new-sits) old-sits
         (merge-sits (cdr new-sits)(merge-aux(car new-sits) old-sits) )    
     )
 )
-;si new-sit est une situation d'un puzzle régulier et old-sits une liste de situations d'un puzzle régulier
-;trié par ordre croissant d'heurisic,
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité)
-;merge-aux renvoi la liste de situations trié par ordre croissant produte de l'insertion de new-sit dans old-sits.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si new-sit est une situation d'un puzzle régulier et old-sits une liste de situations d'un puzzle régulier
+;trié par ordre croissant d'heurisic, alors (merge-aux new-sit old-sit) 
+;renvoi la liste de situations trié par ordre croissant produite de l'insertion de 'new-sit' dans 'old-sits'.
 (define (merge-aux new-sit old-sits)
     (if (null? old-sits) (list new-sit)
         (if(< (car new-sit) (caar old-sits)) (cons new-sit old-sits)
@@ -148,30 +134,24 @@
         )    
     )     
 )
-;si 'sits' est une liste de situations d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;'acc-state?' le prédcat d'acceptation d'u état du puzzle,
-;`heuristic` est une fonction d'heuristic pour ce puzzle,
-;et 'adj' la fonction d'adjacence du puzzle.
-;make-move-heu retourne la liste des situations résultantes de l'aplication de adj sur le premier élement de sits.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si 'sits' est une liste de situations d'un puzzle régulier 'acc-state?' le prédcat d'acceptation d'u état du puzzle,
+;`heuristic` est une fonction d'heuristic pour ce puzzle et 'adj' la fonction d'adjacence du puzzle, alors
+;(make-move-heu sits adj acc-state? heuristic)retourne 
+;la liste des situations résultantes de l'aplication de 'adj' sur le premier élément de sits.
 (define (make-move-heu sits adj acc-state? heuristic)
     (if (null? sits) '() 
         (merge-sits (make-move-heu-aux (car sits) (adj(caddar sits)) heuristic) (cdr sits))
         
     )    
 )
-;si 'old-state' est une situation d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;`heuristic` est une fonction d'heuristic pour ce puzzle,
-;et 'new-states' est une liste de paires pointé contenant tout les états adjacents a l'état dans old-state et le mouvemant menant à cet état
-;make-move-heu-aux retourne une liste de situations adjacentes à old-state valides et non membres des états pŕecédants de old-state
-;
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si 'old-state' est une situation d'un puzzle régulier, `heuristic` est une fonction d'heuristic pour ce puzzle
+;et 'new-states' est une liste de paires pointé contenant tout les états adjacents a l'état de 'old-state' et le mouvement menant à cet état,
+;alors (make-move-heu-aux old-sit new-states heuristic) retourne une liste de situations adjacentes à 'old-state' 
+;valides et non membres des états pŕecédants de 'old-state'.
 (define (make-move-heu-aux old-sit new-states heuristic)
     (if (null? new-states) '()
         (if(equal? 'sink (cdar new-states)) (make-move-heu-aux old-sit (cdr new-states) heuristic)
@@ -181,15 +161,13 @@
         )
     )
 )
-;si 'old-state' est une situation d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;`heuristic` est une fonction d'heuristic pour ce puzzle,
-;et new-pair est une paire pointé où le car est une lettre de l'alphabet du puzzle et le cdr est un état adjacent a l'état de old-sate
-;make-new-state retourne une situation où le mot est la premiere letre de new-pair concatené au mot de old-state, l'état est l'état de new-pair,
-;et l'ensemble de old-state au quelle l'état de old-state a été rajouté.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si 'old-state' est une situation d'un puzzle régulier, `heuristic` est une fonction d'heuristic pour ce puzzle
+;et new-pair est une paire pointé où le car est une lettre de l'alphabet du puzzle et le cdr est un état adjacent
+;à l'état de 'old-sate', alors (make-new-state old-sit new-pair heuristic)retourne une situation où le mot est la 
+;premiere letre de 'new-pair' concatené au mot de 'old-state', l'état est l'état de 'new-pair' et l'ensemble est 
+;l'ensamble de 'old-state' au quelle l'état de old-state a été rajouté.
 (define (make-new-state-heu old-sit new-pair heuristic)
     (list (heuristic (cdr new-pair)) (cons (car new-pair)(cadr old-sit))(cdr new-pair) (set-add(cadddr old-sit)(caddr old-sit)))
 )
@@ -204,17 +182,13 @@
         (solver-heu-aux (list(list (heuristic s) '() s (set ))) '() adj acc-state? heuristic)
     )
 )
-
-;si 'sits' est une liste de situations d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;'acc-state?' le prédcat d'acceptation d'u état du puzzle,
-;`heuristic` est une fonction d'heuristic pour ce puzzle,
-;et 'adj' la fonction d'adjacence du puzzle.
-;solver-heu-aux retourne une paire pointé où le car est un mot de 'answers' renversé et
-;le cdr et une procédure pour laquelle son évaluation retourne a nouveau une paire pointé du même type avec une solution différente aux précedantes
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;si 'sits' est une liste de situations d'un puzzle régulier, 'acc-state?' le prédicat accepteur d'un état du puzzle,
+;`heuristic` est une fonction d'heuristic pour ce puzzle et 'adj' la fonction d'adjacence du puzzle, alors
+;(solver-heu-aux sits answers adj acc-state? heuristic) retourne une paire pointé où le car est un mot 
+;de 'answers' renversé et le cdr et une procédure pour laquelle son évaluation retourne à nouveau une
+;paire pointé du même type avec une solution différente aux précedantes
 (define (solver-heu-aux sits answers adj acc-state? heuristic)
     (if(and (null? answers)(null? sits)) '()
         (let ((new-answers (find-answers-heu sits answers)))
@@ -224,13 +198,11 @@
         )
     )
 )
-;si 'sits' est une liste de situations d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité),
-;'answers' une liste de mots renversé qui menent l'état initiale du puzzle a l'état accepteur
-;find-answers-heu retourne la liste des mots se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accepteur.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si 'sits' est une liste de situations d'un puzzle régulier, 'answers' une liste de mots renversé qui menent l'état
+;initiale du puzzle a l'état accepteur, alors (find-answers-heu sits answers) retourne la liste des mots
+;se trouvant dans 'sits' et 'answers' et menant l'état initial à l'état accepteur.
 (define (find-answers-heu sits answers)
     (if (null? sits) answers
         (if(>(caar sits) 0) answers
@@ -238,12 +210,10 @@
         )
     )
 )
-;si 'sits' est une liste de situations d'un puzzle régulier
-;   (une situation est une liste où le premier élement est la valeur heuristic associé a l'état du puzzle,
-;   le deuxiemme élement un mot qui a été apliqué sur une situation initialle,
-;   le troixiemme élement est l'état actuelle du puzzle,
-;   et le quatriémme élément est un ensemble d'etats déja visité)
-;remove-answers-heu retourne la liste des situations 'sits' où les situations contenant des états accepteur ont été éliminé.
+;Une situation est une liste contenant respéctivement la valeur heuristic associé a l'état du puzzle,
+;un mot qui a été apliqué sur une situation initialle, l'état actuelle du puzzle et un ensemble d'etats déja visité.
+;Si 'sits' est une liste de situations d'un puzzle régulier, alors (remove-answers-heu sits) retourne la liste
+;des situations 'sits' où les situations contenant des états accepteur ont été éliminé.
 (define (remove-answers-heu sits)
     (if (null? sits) '()
             (if(= (caar sits) 0)  (remove-answers-heu (cdr sits))
