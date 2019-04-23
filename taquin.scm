@@ -19,9 +19,9 @@
 ;;;;;;;;;;;;;;;;;;;;;heuristic
 
 ;si 'elem' est un element d'un taquin, caractérisé par un naturelle ou un 'x',
-;'col' et 'line' sont réspectivement la colonne et la ligne aux quelles l'élément se trouve dans le taquin
-;et 'size' est la taille du taquin.
-;manhatan-distance renvoi la distance de mahatan de l'element par rapport a sa position correcte dans le taquin
+;'col' et 'line' sont réspéctivement la colonne et la ligne aux quelles l'élément se trouve dans le taquin
+;et 'size' est la taille du taquin, alors
+;(manhatan-distance elem col line size) renvoi la distance de mahatan de l'element par rapport a sa position correcte dans le taquin
 (define (manhatan-distance elem col line size)
     (if (eq? elem 'x) 0 
         (+(abs(-(modulo (- elem 1) size)col))
@@ -31,9 +31,9 @@
 )
 ; Si `state` est la représentation d'une partie de l'état du taquin,
 ; 'line' la ligne ou débute la représentation du taquin dans 'state'
-; et 'size' est la taille du taquin.
-; (heuristic-aux state line size) renvoie un naturelle atribuant une borne supérieur mesurant la proximité de 'state'
-; a l'état accepteur.
+; et 'size' est la taille du taquin, alors
+; (heuristic-aux state line size) renvoie un naturelle atribuant une borne supérieur
+; mesurant la proximité de 'state' a l'état accepteur.
 ; En particulier, (heuristic-aux state 0 size) renvoi la valeur total de l'heuristique du taquin. 
 (define (heuristic-aux state line size)
     (if (null? state) 0
@@ -42,7 +42,7 @@
 )
 ; Si `ls` est une liste représentant une ligne d'un taquin,
 ; 'line' la ligne représenté par 'ls'
-; et 'size' est la taille du taquin.
+; et 'size' est la taille du taquin, alors
 ; (heuristic-line ls col line size) renvoie un naturelle atribuant une borne supérieur mesurant la proximité des élements de la ligne 'ls' 
 ; a partir de la colone 'col' aux élements dans l'état accepteur.
 (define (heuristic-line ls col line size)
@@ -51,15 +51,15 @@
     )
 )
 
-;si 'ls' est une liste d'élements quelconque et 'counter' un rélle,
-;sup-list-lenght renvoi 'counter' + la longeur superficielle de la liste 'ls' 
+;si 'ls' est une liste d'élements quelconque et 'counter' un rélle, alors
+;(sup-list-lenght ls counter)renvoi 'counter' + la longeur superficielle de la liste 'ls' 
 (define sup-list-length 
     (lambda (ls counter)
         (if (null? ls)counter 
             (sup-list-length (cdr ls)(+ counter 1)))))
 ; Si `state` est la représentation d'un état, (taquin-heuristic state)
 ; renvoie un naturelle atribuant une borne supérieur mesurant la proximité de l'état du taquin
-; a l'état accepteur   
+; à l'état accepteur.
 (define (taquin-heuristic state)
     (heuristic-aux state 0 (sup-list-length state 0))
 )
@@ -79,7 +79,7 @@
     )
 )
 
-; Si `state` est la représentation d'un état, si symbol est une lettre de l'alphabet
+; Si `state` est la représentation d'un état, si 'symbol' est une lettre de l'alphabet
 ; et position est une liste contenant respectivement les coordonnées du trou dans le
 ; le taquin et la taille du taquin, alors (transition state symbol position)
 ; renvoie l'état correspondant à l'état initial qui a subi l'action symbol.
